@@ -34,6 +34,14 @@ record(stringin, "$(P)$(R)ERR_DESC") {
     field(INP, "@asyn($(PORT),0)HXP_ERROR_DESC")
 }
 
+record(bo,"$(P)$(R)GroupInit") {
+    field(DESC,"Initialize all axes")
+    field(DTYP,"asynInt32")
+    field(ZNAM,"Idle")
+    field(ONAM,"Set Init")
+    field(OUT, "@asyn($(PORT),0)HXP_GROUP_INIT")
+}
+
 record(bo,"$(P)$(R)MOVE_ALL") {
     field(DESC,"Move all motors")
     field(DTYP,"asynInt32")

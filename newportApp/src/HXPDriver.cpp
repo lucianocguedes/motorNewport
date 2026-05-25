@@ -67,6 +67,7 @@ HXPController::HXPController(const char *portName, const char *IPAddress, int IP
   createParam(HXPStatusString,                asynParamInt32,   &HXPStatus_);
   createParam(HXPErrorString,                 asynParamInt32,   &HXPError_);
   createParam(HXPErrorDescString,             asynParamOctet,   &HXPErrorDesc_);
+  createParam(HXPGroupInitString,             asynParamInt32,   &HXPGroupInit_);
   createParam(HXPMoveAllString,               asynParamInt32,   &HXPMoveAll_);
   createParam(HXPMoveAllTargetXString,        asynParamFloat64, &HXPMoveAllTargetX_);
   createParam(HXPMoveAllTargetYString,        asynParamFloat64, &HXPMoveAllTargetY_);
@@ -205,6 +206,15 @@ asynStatus HXPController::writeInt32(asynUser *pasynUser, epicsInt32 value)
       readAllCS(pAxis);
     }
   }
+  else if (function == HXPGroupInit_)
+  {
+    if (value == 1)
+    {
+      int initStatus = groupInit(pAxis);
+
+      status = initStatus ? asynError : asynSuccess;
+    }
+  }
   else if (function == HXPCoordSysSet_)
   {
     if (value == 1)
@@ -228,6 +238,20 @@ asynStatus HXPController::writeInt32(asynUser *pasynUser, epicsInt32 value)
     asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
         "%s:%s: function=%d, value=%d\n", 
         driverName, functionName, function, value);
+  return status;
+}
+
+/** 
+  * Set Controller state init
+  */
+int HXPController::groupInit(HXPAxis *pAxis)
+{
+  int status;
+
+  status = HXPGroupInitialize(pAxis->moveSocket_, GROUP);
+
+  postError(pAxis, status);
+
   return status;
 }
 
