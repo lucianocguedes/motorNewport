@@ -94,6 +94,7 @@ public:
 
   /* These are the methods that are new to this class */
   int moveAll(HXPAxis* pAxis);
+  int groupInit(HXPAxis* pAxis);
   int readAllCS(HXPAxis* pAxis);
   int setCS(HXPAxis* pAxis);
   void postError(HXPAxis* pAxis, int status);
