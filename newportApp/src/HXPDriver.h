@@ -17,6 +17,7 @@ USAGE...      Motor driver support for the Newport Hexapod controller.
 #define HXPErrorString                       "HXP_ERROR"
 #define HXPErrorDescString                   "HXP_ERROR_DESC"
 #define HXPGroupInitString                   "HXP_GROUP_INIT"
+#define HXPGroupHomeString                   "HXP_GROUP_HOME"
 #define HXPMoveAllString                     "HXP_MOVE_ALL"
 #define HXPMoveAllTargetXString              "HXP_MOVE_ALL_TARGET_X"
 #define HXPMoveAllTargetYString              "HXP_MOVE_ALL_TARGET_Y"
@@ -95,6 +96,7 @@ public:
   /* These are the methods that are new to this class */
   int moveAll(HXPAxis* pAxis);
   int groupInit(HXPAxis* pAxis);
+  int groupHomeSearch(HXPAxis* pAxis);
   int readAllCS(HXPAxis* pAxis);
   int setCS(HXPAxis* pAxis);
   void postError(HXPAxis* pAxis, int status);
@@ -107,6 +109,7 @@ protected:
   int HXPErrorDesc_;
   int HXPMoveAll_;
   int HXPGroupInit_;
+  int HXPGroupHome_;
   int HXPMoveAllTargetX_;
   int HXPMoveAllTargetY_;
   int HXPMoveAllTargetZ_;

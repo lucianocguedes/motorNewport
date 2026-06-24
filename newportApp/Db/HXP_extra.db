@@ -42,6 +42,14 @@ record(bo,"$(P)$(R)GroupInit") {
     field(OUT, "@asyn($(PORT),0)HXP_GROUP_INIT")
 }
 
+record(bo,"$(P)$(R)GroupHoming") {
+    field(DESC,"Home all axes")
+    field(DTYP,"asynInt32")
+    field(ZNAM,"Idle")
+    field(ONAM,"Set to Homing")
+    field(OUT, "@asyn($(PORT),0)HXP_GROUP_HOME")
+}
+
 record(bo,"$(P)$(R)MOVE_ALL") {
     field(DESC,"Move all motors")
     field(DTYP,"asynInt32")

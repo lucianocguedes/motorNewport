@@ -68,6 +68,7 @@ HXPController::HXPController(const char *portName, const char *IPAddress, int IP
   createParam(HXPErrorString,                 asynParamInt32,   &HXPError_);
   createParam(HXPErrorDescString,             asynParamOctet,   &HXPErrorDesc_);
   createParam(HXPGroupInitString,             asynParamInt32,   &HXPGroupInit_);
+  createParam(HXPGroupHomeString,             asynParamInt32,   &HXPGroupHome_);
   createParam(HXPMoveAllString,               asynParamInt32,   &HXPMoveAll_);
   createParam(HXPMoveAllTargetXString,        asynParamFloat64, &HXPMoveAllTargetX_);
   createParam(HXPMoveAllTargetYString,        asynParamFloat64, &HXPMoveAllTargetY_);
@@ -215,6 +216,15 @@ asynStatus HXPController::writeInt32(asynUser *pasynUser, epicsInt32 value)
       status = initStatus ? asynError : asynSuccess;
     }
   }
+  else if (function == HXPGroupHome_)
+  {
+    if (value == 1)
+    {
+      int initStatus = groupHomeSearch(pAxis);
+
+      status = initStatus ? asynError : asynSuccess;
+    }
+  }
   else if (function == HXPCoordSysSet_)
   {
     if (value == 1)
@@ -253,6 +263,17 @@ int HXPController::groupInit(HXPAxis *pAxis)
   postError(pAxis, status);
 
   return status;
+}
+
+int HXPController::groupHomeSearch(HXPAxis *pAxis)
+{
+  int homeStatus;
+
+  homeStatus = HXPGroupHomeSearch(pAxis->moveSocket_, GROUP);
+
+  postError(pAxis, homeStatus);
+
+  return homeStatus;
 }
 
 
