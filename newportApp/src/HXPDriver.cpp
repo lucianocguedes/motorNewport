@@ -70,6 +70,7 @@ HXPController::HXPController(const char *portName, const char *IPAddress, int IP
   createParam(HXPGroupInitString,             asynParamInt32,   &HXPGroupInit_);
   createParam(HXPGroupHomeString,             asynParamInt32,   &HXPGroupHome_);
   createParam(HXPMoveAllString,               asynParamInt32,   &HXPMoveAll_);
+  createParam(HXPGeneralInhibitString,        asynParamInt32,   &HXPGeneralInhibit_);
   createParam(HXPMoveAllTargetXString,        asynParamFloat64, &HXPMoveAllTargetX_);
   createParam(HXPMoveAllTargetYString,        asynParamFloat64, &HXPMoveAllTargetY_);
   createParam(HXPMoveAllTargetZString,        asynParamFloat64, &HXPMoveAllTargetZ_);
@@ -108,9 +109,20 @@ HXPController::HXPController(const char *portName, const char *IPAddress, int IP
   pollSocket_ = HXPTCP_ConnectToServer((char *)IPAddress, IPPort, HXP_POLL_TIMEOUT);
   if (pollSocket_ < 0) {
     printf("%s:%s: error calling TCP_ConnectToServer for pollSocket\n",
-           driverName, functionName);
+          driverName, functionName);
+  } else {
+    char objectsList[4096] = {0};
+    int objectsStatus = HXPObjectsListGet(pollSocket_, objectsList);
+
+    if (objectsStatus == 0) {
+      printf("%s:%s: HXP ObjectsListGet: %s\n",
+            driverName, functionName, objectsList);
+    } else {
+      printf("%s:%s: HXPObjectsListGet failed, status=%d\n",
+            driverName, functionName, objectsStatus);
+    }
   }
-  
+
   for (axis=0; axis<NUM_AXES; axis++) {
     new HXPAxis(this, axis);
   }
@@ -423,6 +435,9 @@ asynStatus HXPController::poll()
   int polled_motorStatusProblem = 0;
   int polled_motorStatusPowerOn = 0;
   int polled_motorStatusHomed = 0;
+  int hardwareStatus = 0;
+  int generalInhibit = 0;
+  HXPAxis *pAxis = NULL;
   //char readResponse[25];
 
   static const char *functionName = "HXPController::poll";
@@ -473,6 +488,25 @@ asynStatus HXPController::poll()
             driverName, functionName, portName, GROUP, groupStatus_);
   /* Set the status */
   setIntegerParam(HXPStatus_, groupStatus_);
+
+  /* Read General Inhibition status */
+  pAxis = getAxis(0);
+
+  if (pAxis) {
+      int inhibitStatus = HXPPositionerHardwareStatusGet(
+          pollSocket_,
+          pAxis->positionerName_,
+          &hardwareStatus);
+
+      if (inhibitStatus) {
+          asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                    "%s:%s: [%s]: error calling PositionerHardwareStatusGet status=%d\n",
+                    driverName, functionName, portName, inhibitStatus);
+      } else {
+          generalInhibit = hardwareStatus & 0x1;
+          setIntegerParam(HXPGeneralInhibit_, generalInhibit);
+      }
+  }
 
   if (is_firmware_hxpd_) {
     /* try a different kind of logic */

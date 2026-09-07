@@ -34,20 +34,29 @@ record(stringin, "$(P)$(R)ERR_DESC") {
     field(INP, "@asyn($(PORT),0)HXP_ERROR_DESC")
 }
 
-record(bo,"$(P)$(R)GroupInit") {
+record(bo,"$(P)$(R)GroupInitialize") {
     field(DESC,"Initialize all axes")
     field(DTYP,"asynInt32")
     field(ZNAM,"Idle")
-    field(ONAM,"Set Init")
+    field(ONAM,"Initialize")
     field(OUT, "@asyn($(PORT),0)HXP_GROUP_INIT")
 }
 
-record(bo,"$(P)$(R)GroupHoming") {
+record(bo,"$(P)$(R)GroupHome") {
     field(DESC,"Home all axes")
     field(DTYP,"asynInt32")
     field(ZNAM,"Idle")
-    field(ONAM,"Set to Homing")
+    field(ONAM,"Home")
     field(OUT, "@asyn($(PORT),0)HXP_GROUP_HOME")
+}
+
+record(bi,"$(P)$(R)GeneralInhibit") {
+    field(DESC,"General inhibition status")
+    field(DTYP,"asynInt32")
+    field(SCAN,"I/O Intr")
+    field(ZNAM,"Inactive")
+    field(ONAM,"Active")
+    field(INP, "@asyn($(PORT),0)HXP_GENERAL_INHIBIT")
 }
 
 record(bo,"$(P)$(R)MOVE_ALL") {
