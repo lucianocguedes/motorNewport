@@ -781,14 +781,55 @@ asynStatus HXPAxis::move(double position, int relative, double baseVelocity, dou
 
 asynStatus HXPAxis::home(double baseVelocity, double slewVelocity, double acceleration, int forwards)
 {
-  // static const char *functionName = "HXPAxis::home";
+  int status;
+  int groupStatus = 0;
+  static const char *functionName = "HXPAxis::home";
 
-  // kill all
-  HXPGroupKill(moveSocket_, GROUP);
-  // initialize
-  HXPGroupInitialize(moveSocket_, GROUP);
-  // home
-  HXPGroupHomeSearch(moveSocket_, GROUP);
+  // Kill the group
+  status = HXPGroupKill(moveSocket_, GROUP);
+  if (status) {
+    asynPrint(pasynUser_, ASYN_TRACE_ERROR,
+              "%s:%s: [%s,%d]: error calling GroupKill status=%d\n",
+              driverName, functionName, pC_->portName, axisNo_, status);
+    return asynError;
+  }
+
+  // Initialize the group
+  status = HXPGroupInitialize(moveSocket_, GROUP);
+  if (status) {
+    asynPrint(pasynUser_, ASYN_TRACE_ERROR,
+              "%s:%s: [%s,%d]: error calling GroupInitialize status=%d\n",
+              driverName, functionName, pC_->portName, axisNo_, status);
+    return asynError;
+  }
+
+  // Wait until the group reaches the Not referenced state (42)
+  for (int retries = 0; retries < 20; retries++) {
+    status = HXPGroupStatusGet(pollSocket_, GROUP, &groupStatus);
+
+    if (status == 0 && groupStatus == 42) {
+      break;
+    }
+
+    epicsThreadSleep(0.1);
+  }
+
+  if (status || groupStatus != 42) {
+    asynPrint(pasynUser_, ASYN_TRACE_ERROR,
+              "%s:%s: [%s,%d]: group did not reach Not referenced state; status=%d groupStatus=%d\n",
+              driverName, functionName, pC_->portName, axisNo_,
+              status, groupStatus);
+    return asynError;
+  }
+
+  // Start homing
+  status = HXPGroupHomeSearch(moveSocket_, GROUP);
+  if (status) {
+    asynPrint(pasynUser_, ASYN_TRACE_ERROR,
+              "%s:%s: [%s,%d]: error calling GroupHomeSearch status=%d\n",
+              driverName, functionName, pC_->portName, axisNo_, status);
+    return asynError;
+  }
 
   return asynSuccess;
 }

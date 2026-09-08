@@ -201,7 +201,7 @@ void SendAndReceive (int SocketIndex, char buffer[], char valueRtrn[], int retur
                         buffer, status, psock->pasynUser->errorMessage);
 
                 if (retries + 1 < MAX_RETRIES) {
-                    epicsThreadSleep(0.2);
+                    epicsThreadSleep(DEFAULT_TIMEOUT);
                     continue;
                 }
 
