@@ -68,8 +68,6 @@ HXPController::HXPController(const char *portName, const char *IPAddress, int IP
   createParam(HXPStatusDescString,            asynParamOctet,   &HXPStatusDesc_);
   createParam(HXPErrorString,                 asynParamInt32,   &HXPError_);
   createParam(HXPErrorDescString,             asynParamOctet,   &HXPErrorDesc_);
-  createParam(HXPGroupInitString,             asynParamInt32,   &HXPGroupInit_);
-  createParam(HXPGroupHomeString,             asynParamInt32,   &HXPGroupHome_);
   createParam(HXPMoveAllString,               asynParamInt32,   &HXPMoveAll_);
   createParam(HXPGeneralInhibitString,        asynParamInt32,   &HXPGeneralInhibit_);
   createParam(HXPMoveAllTargetXString,        asynParamFloat64, &HXPMoveAllTargetX_);
@@ -220,24 +218,6 @@ asynStatus HXPController::writeInt32(asynUser *pasynUser, epicsInt32 value)
       readAllCS(pAxis);
     }
   }
-  else if (function == HXPGroupInit_)
-  {
-    if (value == 1)
-    {
-      int initStatus = groupInit(pAxis);
-
-      status = initStatus ? asynError : asynSuccess;
-    }
-  }
-  else if (function == HXPGroupHome_)
-  {
-    if (value == 1)
-    {
-      int initStatus = groupHomeSearch(pAxis);
-
-      status = initStatus ? asynError : asynSuccess;
-    }
-  }
   else if (function == HXPCoordSysSet_)
   {
     if (value == 1)
@@ -263,32 +243,6 @@ asynStatus HXPController::writeInt32(asynUser *pasynUser, epicsInt32 value)
         driverName, functionName, function, value);
   return status;
 }
-
-/** 
-  * Set Controller state init
-  */
-int HXPController::groupInit(HXPAxis *pAxis)
-{
-  int status;
-
-  status = HXPGroupInitialize(pAxis->moveSocket_, GROUP);
-
-  postError(pAxis, status);
-
-  return status;
-}
-
-int HXPController::groupHomeSearch(HXPAxis *pAxis)
-{
-  int homeStatus;
-
-  homeStatus = HXPGroupHomeSearch(pAxis->moveSocket_, GROUP);
-
-  postError(pAxis, homeStatus);
-
-  return homeStatus;
-}
-
 
 /** 
   * Moves all hexpod axes to new target positions
