@@ -197,8 +197,14 @@ void SendAndReceive (int SocketIndex, char buffer[], char valueRtrn[], int retur
                                                  &eomReason);
             if (status == asynError) {
                 asynPrint(psock->pasynUser, ASYN_TRACE_ERROR,
-                          "SendAndReceive error calling write, output=%s status=%d, error=%s\n",
-                          buffer, status, psock->pasynUser->errorMessage);
+                        "SendAndReceive error calling write, output=%s status=%d, error=%s\n",
+                        buffer, status, psock->pasynUser->errorMessage);
+
+                if (retries + 1 < MAX_RETRIES) {
+                    epicsThreadSleep(0.2);
+                    continue;
+                }
+
                 strcpy(valueRtrn, "-1");
                 break;
             }
