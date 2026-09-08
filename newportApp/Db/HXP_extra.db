@@ -19,6 +19,13 @@ record(ai,"$(P)$(R)STATUS") {
     field(INP, "@asyn($(PORT),0)HXP_STATUS")
 }
 
+record(stringin,"$(P)$(R)STATUS_DESC") {
+    field(DESC,"HXP Group Status Description")
+    field(DTYP,"asynOctetRead")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),0)HXP_STATUS_DESC")
+}
+
 record(ai,"$(P)$(R)ERROR") {
     field(DESC,"HXP Group Error")
     field(DTYP,"asynInt32")

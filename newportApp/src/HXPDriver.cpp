@@ -65,6 +65,7 @@ HXPController::HXPController(const char *portName, const char *IPAddress, int IP
 
   createParam(HXPMoveCoordSysString,          asynParamInt32,   &HXPMoveCoordSys_);
   createParam(HXPStatusString,                asynParamInt32,   &HXPStatus_);
+  createParam(HXPStatusDescString,            asynParamOctet,   &HXPStatusDesc_);
   createParam(HXPErrorString,                 asynParamInt32,   &HXPError_);
   createParam(HXPErrorDescString,             asynParamOctet,   &HXPErrorDesc_);
   createParam(HXPGroupInitString,             asynParamInt32,   &HXPGroupInit_);
@@ -437,7 +438,8 @@ asynStatus HXPController::poll()
   int polled_motorStatusHomed = 0;
   int hardwareStatus = 0;
   int generalInhibit = 0;
-  HXPAxis *pAxis = NULL;
+  int inhibitStatus = 0;
+  char groupStatusString[256] = {0};
   //char readResponse[25];
 
   static const char *functionName = "HXPController::poll";
@@ -489,23 +491,33 @@ asynStatus HXPController::poll()
   /* Set the status */
   setIntegerParam(HXPStatus_, groupStatus_);
 
+  status = HXPGroupStatusStringGet(
+      pollSocket_,
+      groupStatus_,
+      groupStatusString);
+
+  if (status) {
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+              "%s:%s: [%s]: error calling GroupStatusStringGet status=%d; groupStatus=%d\n",
+              driverName, functionName, portName, status, groupStatus_);
+    setStringParam(HXPStatusDesc_, "Unknown");
+  } else {
+      setStringParam(HXPStatusDesc_, groupStatusString);
+  }
+
   /* Read General Inhibition status */
-  pAxis = getAxis(0);
+  inhibitStatus = HXPPositionerHardwareStatusGet(
+    pollSocket_,
+    (char *)"HEXAPOD.1",
+    &hardwareStatus);
 
-  if (pAxis) {
-      int inhibitStatus = HXPPositionerHardwareStatusGet(
-          pollSocket_,
-          pAxis->positionerName_,
-          &hardwareStatus);
-
-      if (inhibitStatus) {
-          asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s:%s: [%s]: error calling PositionerHardwareStatusGet status=%d\n",
-                    driverName, functionName, portName, inhibitStatus);
-      } else {
-          generalInhibit = hardwareStatus & 0x1;
-          setIntegerParam(HXPGeneralInhibit_, generalInhibit);
-      }
+  if (inhibitStatus) {
+      asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s:%s: [%s]: error calling PositionerHardwareStatusGet status=%d\n",
+                driverName, functionName, portName, inhibitStatus);
+  } else {
+      generalInhibit = hardwareStatus & 0x1;
+      setIntegerParam(HXPGeneralInhibit_, generalInhibit);
   }
 
   if (is_firmware_hxpd_) {

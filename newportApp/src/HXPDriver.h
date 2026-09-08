@@ -14,6 +14,7 @@ USAGE...      Motor driver support for the Newport Hexapod controller.
 // drvInfo strings for extra parameters that the HXP controller supports
 #define HXPMoveCoordSysString                "HXP_MOVE_COORD_SYS"
 #define HXPStatusString                      "HXP_STATUS"
+#define HXPStatusDescString                   "HXP_STATUS_DESC"
 #define HXPErrorString                       "HXP_ERROR"
 #define HXPErrorDescString                   "HXP_ERROR_DESC"
 #define HXPGroupInitString                   "HXP_GROUP_INIT"
@@ -106,6 +107,7 @@ protected:
   #define FIRST_HXP_PARAM HXPMoveCoordSys_
   int HXPMoveCoordSys_;
   int HXPStatus_;
+  int HXPStatusDesc_;
   int HXPError_;
   int HXPErrorDesc_;
   int HXPMoveAll_;
