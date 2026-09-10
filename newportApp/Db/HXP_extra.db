@@ -50,6 +50,22 @@ record(bi,"$(P)$(R)GeneralInhibit") {
     field(INP, "@asyn($(PORT),0)HXP_GENERAL_INHIBIT")
 }
 
+record(ai,"$(P)$(R)HardwareStatus") {
+    field(DESC,"HXP Hardware Status")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),0)HXP_HARDWARE_STATUS")
+}
+
+record(ai,"$(P)$(R)DriverStatus") {
+    field(DESC,"HXP Driver Status")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),0)HXP_DRIVER_STATUS")
+}
+
 record(bo,"$(P)$(R)MOVE_ALL") {
     field(DESC,"Move all motors")
     field(DTYP,"asynInt32")

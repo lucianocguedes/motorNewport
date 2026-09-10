@@ -70,6 +70,8 @@ HXPController::HXPController(const char *portName, const char *IPAddress, int IP
   createParam(HXPErrorDescString,             asynParamOctet,   &HXPErrorDesc_);
   createParam(HXPMoveAllString,               asynParamInt32,   &HXPMoveAll_);
   createParam(HXPGeneralInhibitString,        asynParamInt32,   &HXPGeneralInhibit_);
+  createParam(HXPHardwareStatusString,        asynParamInt32, &HXPHardwareStatus_);
+  createParam(HXPDriverStatusString,          asynParamInt32, &HXPDriverStatus_);
   createParam(HXPMoveAllTargetXString,        asynParamFloat64, &HXPMoveAllTargetX_);
   createParam(HXPMoveAllTargetYString,        asynParamFloat64, &HXPMoveAllTargetY_);
   createParam(HXPMoveAllTargetZString,        asynParamFloat64, &HXPMoveAllTargetZ_);
@@ -391,8 +393,10 @@ asynStatus HXPController::poll()
   int polled_motorStatusPowerOn = 0;
   int polled_motorStatusHomed = 0;
   int hardwareStatus = 0;
+  int driverStatus = 0;
   int generalInhibit = 0;
   int inhibitStatus = 0;
+  int driverStatusRead = 0;
   char groupStatusString[256] = {0};
   //char readResponse[25];
 
@@ -461,17 +465,33 @@ asynStatus HXPController::poll()
 
   /* Read General Inhibition status */
   inhibitStatus = HXPPositionerHardwareStatusGet(
-    pollSocket_,
-    (char *)"HEXAPOD.1",
-    &hardwareStatus);
+      pollSocket_,
+      (char *)"HEXAPOD.1",
+      &hardwareStatus);
 
   if (inhibitStatus) {
       asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                 "%s:%s: [%s]: error calling PositionerHardwareStatusGet status=%d\n",
                 driverName, functionName, portName, inhibitStatus);
   } else {
+      setIntegerParam(HXPHardwareStatus_, hardwareStatus);
+
       generalInhibit = hardwareStatus & 0x1;
       setIntegerParam(HXPGeneralInhibit_, generalInhibit);
+  }
+
+  /* Read driver status */
+  driverStatusRead = HXPPositionerDriverStatusGet(
+      pollSocket_,
+      (char *)"HEXAPOD.1",
+      &driverStatus);
+
+  if (driverStatusRead) {
+      asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s:%s: [%s]: error calling PositionerDriverStatusGet status=%d\n",
+                driverName, functionName, portName, driverStatusRead);
+  } else {
+      setIntegerParam(HXPDriverStatus_, driverStatus);
   }
 
   if (is_firmware_hxpd_) {

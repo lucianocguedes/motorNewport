@@ -18,6 +18,8 @@ USAGE...      Motor driver support for the Newport Hexapod controller.
 #define HXPErrorString                       "HXP_ERROR"
 #define HXPErrorDescString                   "HXP_ERROR_DESC"
 #define HXPGeneralInhibitString              "HXP_GENERAL_INHIBIT"
+#define HXPHardwareStatusString              "HXP_HARDWARE_STATUS"
+#define HXPDriverStatusString                "HXP_DRIVER_STATUS"
 #define HXPMoveAllString                     "HXP_MOVE_ALL"
 #define HXPMoveAllTargetXString              "HXP_MOVE_ALL_TARGET_X"
 #define HXPMoveAllTargetYString              "HXP_MOVE_ALL_TARGET_Y"
@@ -108,6 +110,8 @@ protected:
   int HXPErrorDesc_;
   int HXPMoveAll_;
   int HXPGeneralInhibit_;
+  int HXPHardwareStatus_;
+  int HXPDriverStatus_;
   int HXPMoveAllTargetX_;
   int HXPMoveAllTargetY_;
   int HXPMoveAllTargetZ_;
