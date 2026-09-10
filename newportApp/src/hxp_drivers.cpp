@@ -4203,14 +4203,14 @@ int __stdcall HXPPositionerCurrentVelocityAccelerationFiltersGet (int SocketInde
  *     - Return :
  *            int errorCode
  ***********************************************************************/ 
-int __stdcall HXPPositionerDriverStatusGet (int SocketIndex, char * PositionerName, int * DriverStatus) 
+int __stdcall HXPPositionerDriverStatusGet (int SocketIndex, char * PositionerName, unsigned long * DriverStatus)
 { 
 	int ret = -1; 
 	char ExecuteMethod[SIZE_EXECUTE_METHOD]; 
 	char *ReturnedValue = (char *) malloc (sizeof(char) * SIZE_SMALL); 
 
 	/* Convert to string */ 
-	sprintf (ExecuteMethod, "PositionerDriverStatusGet (%s,int *)", PositionerName);
+	sprintf (ExecuteMethod, "PositionerDriverStatusGet (%s,unsigned long *)", PositionerName);
 
 	/* Send this string and wait return function from controller */ 
 	/* return function : ==0 -> OK ; < 0 -> NOK */ 
@@ -4228,7 +4228,7 @@ int __stdcall HXPPositionerDriverStatusGet (int SocketIndex, char * PositionerNa
 		ptNext = NULL;
 		if (pt != NULL) pt = strchr (pt, ',');
 		if (pt != NULL) pt++;
-		if (pt != NULL) sscanf (pt, "%d", DriverStatus);
+		if (pt != NULL) sscanf (pt, "%lu", DriverStatus);
 	} 
 	if (NULL != ReturnedValue)
 		free (ReturnedValue);

@@ -393,7 +393,7 @@ asynStatus HXPController::poll()
   int polled_motorStatusPowerOn = 0;
   int polled_motorStatusHomed = 0;
   int hardwareStatus = 0;
-  int driverStatus = 0;
+  unsigned long driverStatus = 0;
   int generalInhibit = 0;
   int inhibitStatus = 0;
   int driverStatusRead = 0;
@@ -491,7 +491,7 @@ asynStatus HXPController::poll()
                 "%s:%s: [%s]: error calling PositionerDriverStatusGet status=%d\n",
                 driverName, functionName, portName, driverStatusRead);
   } else {
-      setIntegerParam(HXPDriverStatus_, driverStatus);
+      setIntegerParam(HXPDriverStatus_, (int)driverStatus);
   }
 
   if (is_firmware_hxpd_) {
