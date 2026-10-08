@@ -397,6 +397,7 @@ asynStatus HXPController::poll()
   int generalInhibit = 0;
   int inhibitStatus = 0;
   int driverStatusRead = 0;
+  char physicalPositioner[32];
   char groupStatusString[256] = {0};
   //char readResponse[25];
 
@@ -463,35 +464,41 @@ asynStatus HXPController::poll()
       setStringParam(HXPStatusDesc_, groupStatusString);
   }
 
-  /* Read General Inhibition status */
-  inhibitStatus = HXPPositionerHardwareStatusGet(
-      pollSocket_,
-      (char *)"HEXAPOD.1",
-      &hardwareStatus);
+  /* Physical-positioner diagnostics use addresses 0..5 for HEXAPOD.1..6.
+   * These parameters are separate from the virtual XYZUVW motor parameters.
+   */
+  for (int positioner = 0; positioner < NUM_AXES; positioner++) {
+    snprintf(physicalPositioner, sizeof(physicalPositioner),
+             "%s.%d", GROUP, positioner + 1);
 
-  if (inhibitStatus) {
+    hardwareStatus = 0;
+    inhibitStatus = HXPPositionerHardwareStatusGet(
+        pollSocket_, physicalPositioner, &hardwareStatus);
+
+    if (inhibitStatus) {
       asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s: [%s]: error calling PositionerHardwareStatusGet status=%d\n",
-                driverName, functionName, portName, inhibitStatus);
-  } else {
-      setIntegerParam(HXPHardwareStatus_, hardwareStatus);
+                "%s:%s: [%s]: PositionerHardwareStatusGet(%s) failed, status=%d\n",
+                driverName, functionName, portName, physicalPositioner, inhibitStatus);
+    } else {
+      setIntegerParam(positioner, HXPHardwareStatus_, hardwareStatus);
 
-      generalInhibit = hardwareStatus & 0x1;
-      setIntegerParam(HXPGeneralInhibit_, generalInhibit);
-  }
+      if (positioner == 0) {
+        generalInhibit = hardwareStatus & 0x1;
+        setIntegerParam(0, HXPGeneralInhibit_, generalInhibit);
+      }
+    }
 
-  /* Read driver status */
-  driverStatusRead = HXPPositionerDriverStatusGet(
-      pollSocket_,
-      (char *)"HEXAPOD.1",
-      &driverStatus);
+    driverStatus = 0;
+    driverStatusRead = HXPPositionerDriverStatusGet(
+        pollSocket_, physicalPositioner, &driverStatus);
 
-  if (driverStatusRead) {
+    if (driverStatusRead) {
       asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s: [%s]: error calling PositionerDriverStatusGet status=%d\n",
-                driverName, functionName, portName, driverStatusRead);
-  } else {
-      setIntegerParam(HXPDriverStatus_, (int)driverStatus);
+                "%s:%s: [%s]: PositionerDriverStatusGet(%s) failed, status=%d\n",
+                driverName, functionName, portName, physicalPositioner, driverStatusRead);
+    } else {
+      setIntegerParam(positioner, HXPDriverStatus_, (int)driverStatus);
+    }
   }
 
   if (is_firmware_hxpd_) {
@@ -598,7 +605,9 @@ asynStatus HXPController::poll()
     }
   }
   if (status) firmwareVersion_[0] = 0;
-  callParamCallbacks();
+  for (int address = 0; address < NUM_AXES; address++) {
+    callParamCallbacks(address);
+  }
   return status ? asynError : asynSuccess;
 }
 

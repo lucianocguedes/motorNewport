@@ -50,6 +50,7 @@ record(bi,"$(P)$(R)GeneralInhibit") {
     field(INP, "@asyn($(PORT),0)HXP_GENERAL_INHIBIT")
 }
 
+# Legacy status PVs retain the physical positioner 1 readbacks.
 record(ai,"$(P)$(R)HardwareStatus") {
     field(DESC,"HXP Hardware Status")
     field(DTYP,"asynInt32")
@@ -64,6 +65,103 @@ record(ai,"$(P)$(R)DriverStatus") {
     field(PREC,"0")
     field(SCAN,"I/O Intr")
     field(INP, "@asyn($(PORT),0)HXP_DRIVER_STATUS")
+}
+
+# Physical HEXAPOD.1..6 diagnostics; addresses do not denote virtual XYZUVW axes.
+record(ai,"$(P)$(R)POS1-HWStatus") {
+    field(DESC,"HXP positioner 1 HardwareStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),0)HXP_HARDWARE_STATUS")
+}
+
+record(ai,"$(P)$(R)POS1-DriverStatus") {
+    field(DESC,"HXP positioner 1 DriverStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),0)HXP_DRIVER_STATUS")
+}
+
+record(ai,"$(P)$(R)POS2-HWStatus") {
+    field(DESC,"HXP positioner 2 HardwareStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),1)HXP_HARDWARE_STATUS")
+}
+
+record(ai,"$(P)$(R)POS2-DriverStatus") {
+    field(DESC,"HXP positioner 2 DriverStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),1)HXP_DRIVER_STATUS")
+}
+
+record(ai,"$(P)$(R)POS3-HWStatus") {
+    field(DESC,"HXP positioner 3 HardwareStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),2)HXP_HARDWARE_STATUS")
+}
+
+record(ai,"$(P)$(R)POS3-DriverStatus") {
+    field(DESC,"HXP positioner 3 DriverStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),2)HXP_DRIVER_STATUS")
+}
+
+record(ai,"$(P)$(R)POS4-HWStatus") {
+    field(DESC,"HXP positioner 4 HardwareStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),3)HXP_HARDWARE_STATUS")
+}
+
+record(ai,"$(P)$(R)POS4-DriverStatus") {
+    field(DESC,"HXP positioner 4 DriverStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),3)HXP_DRIVER_STATUS")
+}
+
+record(ai,"$(P)$(R)POS5-HWStatus") {
+    field(DESC,"HXP positioner 5 HardwareStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),4)HXP_HARDWARE_STATUS")
+}
+
+record(ai,"$(P)$(R)POS5-DriverStatus") {
+    field(DESC,"HXP positioner 5 DriverStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),4)HXP_DRIVER_STATUS")
+}
+
+record(ai,"$(P)$(R)POS6-HWStatus") {
+    field(DESC,"HXP positioner 6 HardwareStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),5)HXP_HARDWARE_STATUS")
+}
+
+record(ai,"$(P)$(R)POS6-DriverStatus") {
+    field(DESC,"HXP positioner 6 DriverStatus")
+    field(DTYP,"asynInt32")
+    field(PREC,"0")
+    field(SCAN,"I/O Intr")
+    field(INP, "@asyn($(PORT),5)HXP_DRIVER_STATUS")
 }
 
 record(bo,"$(P)$(R)MOVE_ALL") {
